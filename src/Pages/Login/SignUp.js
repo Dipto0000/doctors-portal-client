@@ -1,50 +1,74 @@
 import React from "react";
 import {
-  useSignInWithEmailAndPassword,
+  useCreateUserWithEmailAndPassword,
   useSignInWithGoogle,
+  useUpdateProfile,
 } from "react-firebase-hooks/auth";
 import auth from "../../firebase.init";
 import { useForm } from "react-hook-form";
 import Spinner from "../Shared/Spinner";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-
-const Login = () => {
+import { Link, useNavigate } from "react-router-dom";
+const SignUp = () => {
   const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
-  const [signInWithEmailAndPassword, user, loading, error] =
-    useSignInWithEmailAndPassword(auth);
+  const [createUserWithEmailAndPassword, user, loading, error] =
+    useCreateUserWithEmailAndPassword(auth);
+  const [updateProfile, updating, updateError] = useUpdateProfile(auth);
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
-  let signInError;
   const navigate = useNavigate();
-  const location = useLocation();
-  let from = location.state?.from?.pathname || "/";
-  if (loading || gLoading) {
+  let signInError;
+  if (loading || gLoading || updating) {
     return <Spinner></Spinner>;
   }
   if (gError || error) {
     signInError = (
       <p className="text-red-500">
-        <small>{error?.message}</small>
+        <small>{error?.message || gError.message || updateError.message}</small>
       </p>
     );
   }
   if (user || gUser) {
-    navigate(from, { replace: true });
+    console.log(user || gUser);
   }
 
-  const onSubmit = (data) => {
-    console.log(data);
-    signInWithEmailAndPassword(data.email, data.password);
+  const onSubmit = async (data) => {
+    await createUserWithEmailAndPassword(data.email, data.password);
+    await updateProfile({ displayName: data.name });
+    navigate("/appointment");
+    console.log("update done");
   };
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="card w-96 shadow-xl text-primary-content">
         <div className="card-body">
-          <h2 className="text-center text-2xl font-bold">Login</h2>
+          <h2 className="text-center text-2xl font-bold">Sign Up</h2>
           <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="form-control w-full max-w-xs">
+              <label className="label">
+                <span className="label-text">Name</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your name"
+                className="input input-bordered w-full max-w-xs"
+                {...register("name", {
+                  required: {
+                    value: true,
+                    message: "Name is required",
+                  },
+                })}
+              />
+              <label className="label">
+                {errors.name?.type === "required" && (
+                  <span className="label-text-alt text-red-500">
+                    {errors.name.message}
+                  </span>
+                )}
+              </label>
+            </div>
             <div className="form-control w-full max-w-xs">
               <label className="label">
                 <span className="label-text">Email</span>
@@ -112,13 +136,13 @@ const Login = () => {
             <input
               className="btn w-full max-w-xs text-white"
               type="submit"
-              value="Login"
+              value="signup"
             />
             <p>
               <small>
-                New to Doctor's portal?
-                <Link className="text-primary" to="/signup">
-                  Create an account
+                Already have an account?
+                <Link className="text-primary" to="/login">
+                  Login
                 </Link>
               </small>
             </p>
@@ -136,4 +160,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;
