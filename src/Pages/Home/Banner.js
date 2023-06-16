@@ -1,5 +1,5 @@
 import React from "react";
-import happyman from "../../assets/images/happy_man.jpg";
+import happyman from "../../assets/images/happy_man1.jpg";
 import PrimaryButton from "../Shared/PrimaryButton";
 
 const Banner = () => {
