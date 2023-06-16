@@ -1,13 +1,44 @@
 import React from "react";
 import { format } from "date-fns";
+import auth from "../../firebase.init";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { toast } from "react-toastify";
 
 const BookingModal = ({ treatment, date, setTreatment }) => {
   const { _id, name, slots } = treatment;
   const handleSubmit = (event) => {
     event.preventDefault();
     const slot = event.target.slot.value;
-    setTreatment(null);
+    const booking = {
+      treatmentId: _id,
+      treatment: name,
+      date: formattedDate,
+      slot,
+      patient: user.email,
+      patientName: user.displayName,
+      phone: event.target.phone.value,
+    };
+
+    fetch("http://localhost:5000/booking", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(booking),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.success) {
+          toast(`Appointment is set, ${formattedDate} at ${slot}`);
+        }
+        //to close the modal
+        setTreatment(null);
+      });
   };
+  const [user, loading] = useAuthState(auth);
+  const formattedDate = format(date, "PP");
+
   return (
     <div>
       <input type="checkbox" id="booking-modal" className="modal-toggle" />
@@ -43,19 +74,23 @@ const BookingModal = ({ treatment, date, setTreatment }) => {
             <input
               name="name"
               type="text"
+              disabled
+              value={user?.displayName || ""}
               placeholder="Your Name"
               className="input w-full max-w-xs"
             />
             <input
               name="email"
               type="email"
+              disabled
+              value={user?.email || ""}
               placeholder="Your Email"
               className="input w-full max-w-xs"
             />
             <input
               name="phone"
               type="text"
-              placeholder="Your Email"
+              placeholder="Your Phone number"
               className="input w-full max-w-xs"
             />
             <input

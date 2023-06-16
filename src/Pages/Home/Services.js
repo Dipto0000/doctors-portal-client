@@ -1,28 +1,28 @@
 import React from "react";
-import fluoride from "../../assets/images/fluoride.png";
-import cavity from "../../assets/images/cavity.png";
-import whitening from "../../assets/images/whitening.png";
+import depression from "../../assets/images/Depression_releived_man.jpg";
+import anxiety from "../../assets/images/anxiety_disorder.jpg";
+import bipolar from "../../assets/images/bipoler_disorder.jpg";
 import Service from "./Service";
 
 const Services = () => {
   const services = [
     {
       _id: 1,
-      name: "Fluoride Treatment",
+      name: "Depression relief",
       description: "",
-      img: fluoride,
+      img: depression,
     },
     {
       _id: 2,
-      name: "Cavity Filling",
+      name: "Anxiety disorder",
       description: "",
-      img: cavity,
+      img: anxiety,
     },
     {
       _id: 3,
-      name: "Teeth Whitening",
+      name: "Bipolar Disorder",
       description: "",
-      img: whitening,
+      img: bipolar,
     },
   ];
   return (
